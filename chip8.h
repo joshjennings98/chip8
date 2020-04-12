@@ -4,6 +4,7 @@
 #define CHIP8_H
 
 #include<iostream>
+#include<string>
 
 class Chip8 {
     private:
@@ -12,6 +13,8 @@ class Chip8 {
         unsigned char byte;
         unsigned char x;
         unsigned char y;
+
+        bool drawFlag;
 
         unsigned char fontset[80] = { 
         0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
@@ -87,6 +90,9 @@ class Chip8 {
     public:
         Chip8(); 
         void executeCycle();
+        void loadROM(std::string filename);
+        void setKeys();
+        bool getDrawFlag();
 };
 
 #endif

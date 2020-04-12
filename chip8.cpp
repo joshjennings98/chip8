@@ -39,7 +39,23 @@ Chip8::Chip8()
     delayTimer = 0;
     soundTimer = 0;
 
-    std::cout << "Initialised System." << std::endl;
+    // Reset Draw Flag
+    drawFlag = false;
+}
+
+bool Chip8::getDrawFlag()
+{
+    return drawFlag;
+}
+
+void Chip8::loadROM(std::string filename)
+{
+
+}
+
+void Chip8::setKeys()
+{
+
 }
 
 void Chip8::executeCycle()
@@ -197,22 +213,27 @@ void Chip8::executeCycle()
 
 void Chip8::CLS()
 {
-
+    for (int i = 0; i < 64; i++) { 
+        for (int j = 0; j < 32; j++) {
+            display[i][j] = 0;
+        }
+    }
 }
 
 void Chip8::RET()
 {
-
+    pc = stack[sp];
+    sp--;
 }
 
 void Chip8::SYS_addr(unsigned char addr)
 {
-
+    //  This instruction is only used on the old computers on which Chip-8 was originally implemented. It is ignored by modern interpreters.
 }
 
 void Chip8::JP_addr(unsigned char addr)
 {
-
+    pc = addr;
 }
 
 void Chip8::CALL_addr(unsigned char addr)
