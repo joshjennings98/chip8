@@ -9,10 +9,10 @@
 class Chip8 {
     private:
         unsigned short opcode;
-        unsigned char addr;
+        unsigned short addr;
         unsigned char byte;
-        unsigned char x;
-        unsigned char y;
+        unsigned short x;
+        unsigned short y;
 
         bool drawFlag;
 
@@ -56,36 +56,36 @@ class Chip8 {
         void SYS_addr(unsigned char addr);
         void JP_addr(unsigned char addr);
         void CALL_addr(unsigned char addr);
-        void SE_Vx_byte(unsigned char x, unsigned char byte);
-        void SNE_Vx_byte(unsigned char x, unsigned char byte);
-        void SE_Vx_Vy(unsigned char x, unsigned char y);
-        void LD_Vx_byte(unsigned char x, unsigned char byte);
-        void ADD_Vx_byte(unsigned char x, unsigned char byte);
-        void LD_Vx_Vy(unsigned char x, unsigned char y);
-        void OR_Vx_Vy(unsigned char x, unsigned char y);
-        void AND_Vx_Vy(unsigned char x, unsigned char y);
-        void XOR_Vx_Vy(unsigned char x, unsigned char y);
-        void ADD_Vx_Vy(unsigned char x, unsigned char y);
-        void SUB_Vx_Vy(unsigned char x, unsigned char y);
-        void SHR_Vx_Vy(unsigned char x, unsigned char y);
-        void SUBN_Vx_Vy(unsigned char x, unsigned char y);
-        void SHL_Vx_Vy(unsigned char x, unsigned char y);
-        void SNE_Vx_Vy(unsigned char x, unsigned char y);
+        void SE_Vx_byte(unsigned short x, unsigned char byte);
+        void SNE_Vx_byte(unsigned short x, unsigned char byte);
+        void SE_Vx_Vy(unsigned short x, unsigned short y);
+        void LD_Vx_byte(unsigned short x, unsigned char byte);
+        void ADD_Vx_byte(unsigned short x, unsigned char byte);
+        void LD_Vx_Vy(unsigned short x, unsigned short y);
+        void OR_Vx_Vy(unsigned short x, unsigned short y);
+        void AND_Vx_Vy(unsigned short x, unsigned short y);
+        void XOR_Vx_Vy(unsigned short x, unsigned short y);
+        void ADD_Vx_Vy(unsigned short x, unsigned short y);
+        void SUB_Vx_Vy(unsigned short x, unsigned short y);
+        void SHR_Vx_Vy(unsigned short x, unsigned short y);
+        void SUBN_Vx_Vy(unsigned short x, unsigned short y);
+        void SHL_Vx_Vy(unsigned short x, unsigned short y);
+        void SNE_Vx_Vy(unsigned short x, unsigned short y);
         void LD_I_addr(unsigned char addr);
         void JP_V0_addr(unsigned char addr);
-        void RND_Vx_byte(unsigned char x, unsigned char byte);
-        void DRW_Vx_Vy_nibble(unsigned char x, unsigned char y, unsigned char nibble);
-        void SKP_Vx(unsigned char x);
-        void SKNP_Vx(unsigned char x);
-        void LD_Vx_DT(unsigned char x);
-        void LD_Vx_K(unsigned char x);
-        void LD_DT_Vx(unsigned char x);
-        void LD_ST_Vx(unsigned char x);
-        void ADD_I_Vx(unsigned char x);
-        void LD_F_Vx(unsigned char x);
-        void LD_B_Vx(unsigned char x);
-        void LD_I_Vx(unsigned char x);
-        void LD_Vx_I(unsigned char x);
+        void RND_Vx_byte(unsigned short x, unsigned char byte);
+        void DRW_Vx_Vy_nibble(unsigned short x, unsigned short y, unsigned short n);
+        void SKP_Vx(unsigned short x);
+        void SKNP_Vx(unsigned short x);
+        void LD_Vx_DT(unsigned short x);
+        void LD_Vx_K(unsigned short x);
+        void LD_DT_Vx(unsigned short x);
+        void LD_ST_Vx(unsigned short x);
+        void ADD_I_Vx(unsigned short x);
+        void LD_F_Vx(unsigned short x);
+        void LD_B_Vx(unsigned short x);
+        void LD_I_Vx(unsigned short x);
+        void LD_Vx_I(unsigned short x);
 
     public:
         Chip8(); 

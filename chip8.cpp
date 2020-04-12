@@ -1,5 +1,6 @@
 // chip8.cpp
 #include<iostream>
+#include<random>
 #include"chip8.h"
 
 Chip8::Chip8()
@@ -243,152 +244,212 @@ void Chip8::CALL_addr(unsigned char addr)
     pc = addr;
 }
 
-void Chip8::SE_Vx_byte(unsigned char x, unsigned char byte)
+void Chip8::SE_Vx_byte(unsigned short x, unsigned char byte)
 {
-
+    if (v[x] == byte) {
+        pc += 4;
+    } else {
+        pc += 2;
+    }
 }
 
-void Chip8::SNE_Vx_byte(unsigned char x, unsigned char byte)
+void Chip8::SNE_Vx_byte(unsigned short x, unsigned char byte)
 {
-
+    if (v[x] != byte) {
+        pc += 4;
+    } else {
+        pc += 2;
+    }
 }
 
-void Chip8::SE_Vx_Vy(unsigned char x, unsigned char y)
+void Chip8::SE_Vx_Vy(unsigned short x, unsigned short y)
 {
-
+    if (v[x] == v[y]) {
+        pc += 4;
+    } else {
+        pc += 2;
+    }
 }
 
-void Chip8::LD_Vx_byte(unsigned char x, unsigned char byte)
+void Chip8::LD_Vx_byte(unsigned short x, unsigned char byte)
 {
-
+    v[x] = byte;
+    pc += 2;
 }
 
-void Chip8::ADD_Vx_byte(unsigned char x, unsigned char byte)
+void Chip8::ADD_Vx_byte(unsigned short x, unsigned char byte)
 {
-
+    v[x] += byte;
+    pc += 2;
 }
 
-void Chip8::LD_Vx_Vy(unsigned char x, unsigned char y)
+void Chip8::LD_Vx_Vy(unsigned short x, unsigned short y)
 {
-
+    v[x] = v[y];
+    pc += 2;
 }
 
-void Chip8::OR_Vx_Vy(unsigned char x, unsigned char y)
+void Chip8::OR_Vx_Vy(unsigned short x, unsigned short y)
 {
-
+    v[x] |= v[y];
+    pc += 2;
 }
 
-void Chip8::AND_Vx_Vy(unsigned char x, unsigned char y)
+void Chip8::AND_Vx_Vy(unsigned short x, unsigned short y)
 {
-
+    v[x] &= v[y];
+    pc += 2;
 }
 
-void Chip8::XOR_Vx_Vy(unsigned char x, unsigned char y)
+void Chip8::XOR_Vx_Vy(unsigned short x, unsigned short y)
 {
-
+    v[x] ^= v[y];
+    pc += 2;
 }
 
-void Chip8::ADD_Vx_Vy(unsigned char x, unsigned char y)
+void Chip8::ADD_Vx_Vy(unsigned short x, unsigned short y)
 {
+    v[x] += v[y];
+    pc += 2;
 
+    if ((int) v[x] + (int) v[y] > 255) {
+        v[0xF] = 1;
+    } else {
+        v[0xF] = 0;
+    }
 }
 
-void Chip8::SUB_Vx_Vy(unsigned char x, unsigned char y)
+void Chip8::SUB_Vx_Vy(unsigned short x, unsigned short y)
 {
+    if (v[x] > v[y]) {
+        v[0xF] = 1;
+    } else {
+        v[0xF] = 0;
+    }
 
+    v[x] -= v[y];
+    pc += 2;
 }
 
-void Chip8::SHR_Vx_Vy(unsigned char x, unsigned char y)
+void Chip8::SHR_Vx_Vy(unsigned short x, unsigned short y)
 {
+    if (v[x] % 2 == 1) {
+        v[0xF] = 1;
+    } else {
+        v[0xF] = 0;
+    }
 
+    v[x] >>= 1;
+    pc += 2;
 }
 
-void Chip8::SUBN_Vx_Vy(unsigned char x, unsigned char y)
+void Chip8::SUBN_Vx_Vy(unsigned short x, unsigned short y)
 {
+    if (v[y] > v[x]) {
+        v[0xF] = 1;
+    } else {
+        v[0xF] = 0;
+    }
 
+    v[x] = v[y] - v[x];
+    pc += 2;
 }
 
-void Chip8::SHL_Vx_Vy(unsigned char x, unsigned char y)
+void Chip8::SHL_Vx_Vy(unsigned short x, unsigned short y)
 {
+    if ((v[x] & 0x80) == 0x80) {
+        v[0xF] = 1;
+    } else {
+        v[0xF] = 0;
+    }
 
+    v[x] = v[x] << 1 & 0xFF;
+    pc += 2;
 }
 
-void Chip8::SNE_Vx_Vy(unsigned char x, unsigned char y)
+void Chip8::SNE_Vx_Vy(unsigned short x, unsigned short y)
 {
-
+    if (v[x] != v[y]) {
+        pc += 4;
+    } else {
+        pc += 2;
+    }
 }
 
 void Chip8::LD_I_addr(unsigned char addr)
 {
-
+    I = memory[addr];
+    pc += 2;
 }
 
 void Chip8::JP_V0_addr(unsigned char addr)
 {
-
+    pc = v[0] + addr;
 }
 
-void Chip8::RND_Vx_byte(unsigned char x, unsigned char byte)
+void Chip8::RND_Vx_byte(unsigned short x, unsigned char byte)
+{
+    char r = rand() % 255;
+    v[x] = r & byte;
+    pc += 2;
+}
+
+void Chip8::DRW_Vx_Vy_nibble(unsigned short x, unsigned short y, unsigned short n)
+{
+    
+}
+
+void Chip8::SKP_Vx(unsigned short x)
 {
 
 }
 
-void Chip8::DRW_Vx_Vy_nibble(unsigned char x, unsigned char y, unsigned char nibble)
+void Chip8::SKNP_Vx(unsigned short x)
 {
 
 }
 
-void Chip8::SKP_Vx(unsigned char x)
+void Chip8::LD_Vx_DT(unsigned short x)
 {
 
 }
 
-void Chip8::SKNP_Vx(unsigned char x)
+void Chip8::LD_Vx_K(unsigned short x)
 {
 
 }
 
-void Chip8::LD_Vx_DT(unsigned char x)
+void Chip8::LD_DT_Vx(unsigned short x)
 {
 
 }
 
-void Chip8::LD_Vx_K(unsigned char x)
+void Chip8::LD_ST_Vx(unsigned short x)
 {
 
 }
 
-void Chip8::LD_DT_Vx(unsigned char x)
+void Chip8::ADD_I_Vx(unsigned short x)
 {
 
 }
 
-void Chip8::LD_ST_Vx(unsigned char x)
+void Chip8::LD_F_Vx(unsigned short x)
 {
 
 }
 
-void Chip8::ADD_I_Vx(unsigned char x)
+void Chip8::LD_B_Vx(unsigned short x)
 {
 
 }
 
-void Chip8::LD_F_Vx(unsigned char x)
+void Chip8::LD_I_Vx(unsigned short x)
 {
 
 }
 
-void Chip8::LD_B_Vx(unsigned char x)
-{
-
-}
-
-void Chip8::LD_I_Vx(unsigned char x)
-{
-
-}
-
-void Chip8::LD_Vx_I(unsigned char x)
+void Chip8::LD_Vx_I(unsigned short x)
 {
 
 }
