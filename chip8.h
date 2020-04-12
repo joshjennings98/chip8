@@ -41,8 +41,6 @@ class Chip8 {
         unsigned short I;
         unsigned short pc;
 
-        unsigned char display[64][32];
-
         unsigned char delayTimer;
         unsigned char soundTimer;
 
@@ -88,11 +86,14 @@ class Chip8 {
         void LD_Vx_I(unsigned short x);
 
     public:
+        unsigned char display[32][64];
+
         Chip8(); 
         void executeCycle();
         void loadROM(std::string filename);
         void setKeys();
         bool getDrawFlag();
+        void resetDrawFlag();
 };
 
 #endif
