@@ -447,7 +447,7 @@ void Chip8::DRW_Vx_Vy_nibble(unsigned short x, unsigned short y, unsigned short 
 
 void Chip8::SKP_Vx(unsigned short x)
 {
-    if (keypad[x] != 0) {
+    if (keypad[v[x]] != 0) {
         pc += 4;
     } else {
         pc += 2;
@@ -456,7 +456,7 @@ void Chip8::SKP_Vx(unsigned short x)
 
 void Chip8::SKNP_Vx(unsigned short x)
 {
-    if (keypad[x] == 0) {
+    if (keypad[v[x]] == 0) {
         pc += 4;
     } else {
         pc += 2;
