@@ -71,11 +71,8 @@ class Chip8 {
         Chip8(); 
         void executeCycle();
         bool loadROM(std::string filename);
-        void setKeys();
         bool getDrawFlag();
         void resetDrawFlag();
-        bool loadApplication(const char * filename);
 };
-
 
 #endif

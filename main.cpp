@@ -1,219 +1,107 @@
-/*
-#include<iostream>
-#include<fstream>
-#include<string>
-#include <stdlib.h>
-#include"chip8.h"
-#include"chip8.cpp"
-
-void setupGraphics();
-void setupInput();
-void drawGraphics(Chip8 * chip8);
-
-int main()
-{
-    setupGraphics();
-    setupInput();
-
-    Chip8 chip8;
- 
-    chip8.loadROM("chip8.ch8");
-    //chip8.loadApplication("pong.rom");
-
-    //return 0;
-    int i = 0;
-
-    while(true)
-    {
-        i++;
-        chip8.executeCycle();
-
-        // Only draw to screen if draw flag is set
-        if(chip8.getDrawFlag()) {
-            drawGraphics(&chip8);
-            std::cin.get();
-            //chip8.resetDrawFlag();
-        }
-        
-        chip8.setKeys();
-        //std::cin.get();
-
-        while (i % 100000 != 0) {
-            i++;
-        }
-  	
-    }
-
-    return 0;
-}
-
-void setupGraphics()
-{
-
-}
-
-void setupInput()
-{
-
-}
-
-void drawGraphics(Chip8 * chip8)
-{
-    //system("clear");
-    for (int i = 0; i < 10; i++) {
-        printf("\n\n\n\n\n\n\n\n");
-    }
-    
-    for (int i = 0; i < 32; i++) {
-        for (int j = 0; j < 64; j++) {
-            if (chip8->display[i * j + j] != 0) {
-                std::cout << "██";
-            } else {
-                std::cout << "  ";
-            }
-        }
-        std::cout << std::endl; 
-        //for (auto i : chip8->display) {
-        //    std::cout << (int) i << " ";
-        //}
-    }
-
-    chip8->resetDrawFlag();
-}
-*/
+// main.cpp
 
 #include <iostream>
 #include <chrono>
 #include <thread>
+
 #include "stdint.h"
 #include "SDL2/SDL.h"
-
-
 #include "chip8.h"
 #include "chip8.cpp"
 
-using namespace std;
-
-// Keypad keymap
-uint8_t keymap[16] = {
-    SDLK_x,
-    SDLK_1,
-    SDLK_2,
-    SDLK_3,
-    SDLK_q,
-    SDLK_w,
-    SDLK_e,
-    SDLK_a,
-    SDLK_s,
-    SDLK_d,
-    SDLK_z,
-    SDLK_c,
-    SDLK_4,
-    SDLK_r,
-    SDLK_f,
-    SDLK_v,
-};
-
 int main(int argc, char **argv) {
 
-    // Command usage
-    if (argc != 2) {
-        cout << "Usage: chip8 <ROM file>" << endl;
+    int w, h;
+    Chip8 chip8 = Chip8();
+    SDL_Window * window = NULL;
+    SDL_Event e;
+    unsigned int screenBuffer[2048];
+    unsigned char keys[16] = {SDLK_x, SDLK_1, SDLK_2, SDLK_3, SDLK_q, SDLK_w, SDLK_e, SDLK_a, SDLK_s, SDLK_d, SDLK_z, SDLK_c, SDLK_4, SDLK_r, SDLK_f, SDLK_v};
+
+    if (argc < 2) {
+        std::cout << "Need to provide rom file." << std::endl;
+        return 1;
+    } else if (argc == 2) {
+        w = 1024;
+        h = 512;
+    } else if (argc == 4) {
+        sscanf (argv[2],"%d", &w);
+        sscanf (argv[3],"%d", &h);
+    } else {
+        std::cout << "Need to provide rom file (and optionally width and height)." << std::endl;
+        return 1;
+    }
+    
+    if (SDL_Init(SDL_INIT_EVERYTHING) < 0 ) {
+        std::cout << "SDL could not initialize: " << SDL_GetError() << std::endl;
         return 1;
     }
 
-    Chip8 chip8 = Chip8();          // Initialise Chip8
+    window = SDL_CreateWindow("Josh's CHIP-8 Emulator", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, w, h, SDL_WINDOW_SHOWN);
 
-    int w = 1024;                   // Window width
-    int h = 512;                    // Window height
-
-    // The window we'll be rendering to
-    SDL_Window* window = NULL;
-
-    // Initialize SDL
-    if ( SDL_Init(SDL_INIT_EVERYTHING) < 0 ) {
-        printf( "SDL could not initialize! SDL_Error: %s\n", SDL_GetError() );
-        exit(1);
-    }
-    // Create window
-    window = SDL_CreateWindow(
-            "CHIP-8 Emulator",
-            SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-            w, h, SDL_WINDOW_SHOWN
-    );
     if (window == NULL){
-        printf( "Window could not be created! SDL_Error: %s\n",
-                SDL_GetError() );
-        exit(2);
+        std::cout << "Window could not be created: " << SDL_GetError() << std::endl;
+        return 1;
     }
 
-    // Create renderer
-    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, 0);
+    SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, 0); // Create renderer
     SDL_RenderSetLogicalSize(renderer, w, h);
 
     // Create texture that stores frame buffer
-    SDL_Texture* sdlTexture = SDL_CreateTexture(renderer,
-            SDL_PIXELFORMAT_ARGB8888,
-            SDL_TEXTUREACCESS_STREAMING,
-            64, 32);
+    SDL_Texture* sdlTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, 64, 32);
+    
+    if (!chip8.loadROM(argv[1])) {
+        std::cout << "Failed to load ROM: " << argv[1] << std::endl;
+        return 1;
+    }
 
-    // Temporary pixel buffer
-    uint32_t pixels[2048];
-
-    // Attempt to load ROM
-    if (!chip8.loadROM(argv[1]))
-        return 2;
-
-    // Emulation loop
     while (true) {
+        
         chip8.executeCycle();
 
-        // Process SDL events
-        SDL_Event e;
+        // Handle SDL events
         while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_QUIT) exit(0);
-
-            // Process keydown events
+            
+            // Handle key press events
             if (e.type == SDL_KEYDOWN) {
-                if (e.key.keysym.sym == SDLK_ESCAPE)
-                    exit(0);
+                if (e.key.keysym.sym == SDLK_ESCAPE) {
+                    return 0;
+                }
 
                 for (int i = 0; i < 16; ++i) {
-                    if (e.key.keysym.sym == keymap[i]) {
+                    if (e.key.keysym.sym == keys[i]) {
                         chip8.keypad[i] = 1;
-                        
                     }
                 }
             }
-            // Process keyup events
+
+            // Handle key release events
             if (e.type == SDL_KEYUP) {
                 for (int i = 0; i < 16; ++i) {
-                    if (e.key.keysym.sym == keymap[i]) {
+                    if (e.key.keysym.sym == keys[i]) {
                         chip8.keypad[i] = 0;
                     }
                 }
             }
         }
 
-        // If draw occurred, redraw SDL screen
+        // Only redraw if draw flag is enabled
         if (chip8.getDrawFlag()) {
-            chip8.resetDrawFlag();
-
-            // Store pixels in temporary buffer
             for (int i = 0; i < 2048; ++i) {
-                unsigned char pixel = chip8.display[i];
-                pixels[i] = (0x00FFFFFF * pixel) | 0xFF000000;
+                screenBuffer[i] = (0x00FFFFFF * chip8.display[i]) | 0xFF000000;
             }
-            // Update SDL texture
-            SDL_UpdateTexture(sdlTexture, NULL, pixels, 64 * sizeof(Uint32));
+            
+            SDL_UpdateTexture(sdlTexture, NULL, screenBuffer, 64 * sizeof(Uint32)); // Update SDL texture
+            
             // Clear screen and render
             SDL_RenderClear(renderer);
             SDL_RenderCopy(renderer, sdlTexture, NULL, NULL);
             SDL_RenderPresent(renderer);
+
+            chip8.resetDrawFlag();
         }
 
-        // Sleep to slow down emulation speed
+        // Slow down emulation speed
         std::this_thread::sleep_for(std::chrono::microseconds(1200));
-
     }
 }

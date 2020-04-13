@@ -1,8 +1,9 @@
 // chip8.cpp
+
 #include<iostream>
 #include<random>
 #include<fstream>
-#include<assert.h>
+
 #include"chip8.h"
 
 unsigned char fontset[80] = { 
@@ -82,15 +83,9 @@ bool Chip8::loadROM(std::string filename)
     while (input.get(c)) {
         x = c;
         memory[512 + i] = x;
-        //std::cout << (int) x << std::endl;
         i++;
     }
     return true;
-}
-
-void Chip8::setKeys()
-{
-
 }
 
 void Chip8::resetDrawFlag() 
@@ -102,17 +97,10 @@ void Chip8::executeCycle()
 {
     opcode = memory[pc] << 8 | memory[pc + 1];
 
-    
-    //assert(pc < 0x210);
-
-    
     addr = opcode & 0x0FFF;
     byte = opcode & 0x00FF;
     x = (opcode & 0x0F00) >> 8;
     y = (opcode & 0x00F0) >> 4;
-   
-    //printf("%X %X \naddr=%d byte=%d x=%d y=%d ", pc, opcode, addr, byte, x, y);
-
 
     switch(opcode & 0xF000) {    
         case 0x0000:
@@ -256,15 +244,6 @@ void Chip8::executeCycle()
         }
         soundTimer--;
     }  
-
-     /*
-    for (int i = 0; i < 16; i++)
-        std::cout << "v" << i  << "=" << (int) v[i] << " ";
-    printf("I=%d", I);
-    std::cout << std::endl << std::endl;
-
-    std::cin.get();
-    // */
 }
 
 void Chip8::CLS()
@@ -303,29 +282,17 @@ void Chip8::CALL_addr(unsigned short addr)
 
 void Chip8::SE_Vx_byte(unsigned short x, unsigned char byte)
 {
-    if (v[x] == byte) {
-        pc += 4;
-    } else {
-        pc += 2;
-    }
+    pc += v[x] == byte ? 4 : 2;
 }
 
 void Chip8::SNE_Vx_byte(unsigned short x, unsigned char byte)
 {
-    if (v[x] != byte) {
-        pc += 4;
-    } else {
-        pc += 2;
-    }
+    pc += v[x] != byte ? 4 : 2;
 }
 
 void Chip8::SE_Vx_Vy(unsigned short x, unsigned short y)
 {
-    if (v[x] == v[y]) {
-        pc += 4;
-    } else {
-        pc += 2;
-    }
+    pc += v[x] == v[y] ? 4 : 2;
 }
 
 void Chip8::LD_Vx_byte(unsigned short x, unsigned char byte)
@@ -369,20 +336,12 @@ void Chip8::ADD_Vx_Vy(unsigned short x, unsigned short y)
     v[x] += v[y];
     pc += 2;
 
-    if ((int) v[x] + (int) v[y] > 255) {
-        v[0xF] = 1;
-    } else {
-        v[0xF] = 0;
-    }
+    v[0xF] = (int) v[x] + (int) v[y] > 255 ? 1 : 0;
 }
 
 void Chip8::SUB_Vx_Vy(unsigned short x, unsigned short y)
 {
-    if (v[x] >= v[y]) {
-        v[0xF] = 1;
-    } else {
-        v[0xF] = 0;
-    }
+    v[0xF] = v[x] >= v[y] ? 1 : 0;
 
     v[x] -= v[y];
     pc += 2;
@@ -390,11 +349,7 @@ void Chip8::SUB_Vx_Vy(unsigned short x, unsigned short y)
 
 void Chip8::SHR_Vx_Vy(unsigned short x, unsigned short y)
 {
-    if (v[x] % 2 == 1) {
-        v[0xF] = 1;
-    } else {
-        v[0xF] = 0;
-    }
+    v[0xF] = v[x] % 2 == 1 ? 1 : 0;
 
     v[x] >>= 1;
     pc += 2;
@@ -402,11 +357,7 @@ void Chip8::SHR_Vx_Vy(unsigned short x, unsigned short y)
 
 void Chip8::SUBN_Vx_Vy(unsigned short x, unsigned short y)
 {
-    if (v[y] >= v[x]) {
-        v[0xF] = 1;
-    } else {
-        v[0xF] = 0;
-    }
+    v[0xF] = v[y] >= v[x] ? 1 : 0;
 
     v[x] = v[y] - v[x];
     pc += 2;
@@ -414,11 +365,7 @@ void Chip8::SUBN_Vx_Vy(unsigned short x, unsigned short y)
 
 void Chip8::SHL_Vx_Vy(unsigned short x, unsigned short y)
 {
-    if ((v[x] & 0x80) == 0x80) {
-        v[0xF] = 1;
-    } else {
-        v[0xF] = 0;
-    }
+    v[0xF] = (v[x] & 0x80) == 0x80 ? 1 : 0;
 
     v[x] <<= 1;
     pc += 2;
@@ -426,11 +373,7 @@ void Chip8::SHL_Vx_Vy(unsigned short x, unsigned short y)
 
 void Chip8::SNE_Vx_Vy(unsigned short x, unsigned short y)
 {
-    if (v[x] != v[y]) {
-        pc += 4;
-    } else {
-        pc += 2;
-    }
+    pc += v[x] != v[y] ? 4 : 2;
 }
 
 void Chip8::LD_I_addr(unsigned short addr)
@@ -470,20 +413,12 @@ void Chip8::DRW_Vx_Vy_nibble(unsigned short x, unsigned short y, unsigned short 
 
 void Chip8::SKP_Vx(unsigned short x)
 {
-    if (keypad[v[x]] != 0) {
-        pc += 4;
-    } else {
-        pc += 2;
-    }
+    pc += keypad[v[x]] != 0 ? 4 : 2;
 } 
 
 void Chip8::SKNP_Vx(unsigned short x)
 {
-    if (keypad[v[x]] == 0) {
-        pc += 4;
-    } else {
-        pc += 2;
-    }
+    pc += keypad[v[x]] == 0 ? 4 : 2;
 }
 
 void Chip8::LD_Vx_DT(unsigned short x)
@@ -496,22 +431,17 @@ void Chip8::LD_Vx_K(unsigned short x)
 {
     bool keyPress = false;
 
-    for(int i = 0; i < 16; ++i)
-    {
-        if(keypad[i] != 0)
-        {
+    for(int i = 0; i < 16; ++i) {
+        if(keypad[i] != 0) {
             v[x] = i;
             keyPress = true;
-            
         }
-
     }
 
-    // If we didn't received a keypress, skip this cycle and try again.
-    if(!keyPress)						
-        return;
-
-    pc += 2;
+    // wait for keypress
+    if(keyPress) {					
+        pc += 2;
+    }
 }
 
 void Chip8::LD_DT_Vx(unsigned short x)
@@ -528,10 +458,8 @@ void Chip8::LD_ST_Vx(unsigned short x)
 
 void Chip8::ADD_I_Vx(unsigned short x)
 {
-    if(I + v[x] > 0xFFF)	// VF is set to 1 when range overflow (I+VX>0xFFF), and 0 when there isn't.
-        v[0xF] = 1;
-    else
-        v[0xF] = 0;
+    v[0xF] = I + v[x] > 0xFFF ? 1 : 0;
+
     I += v[x];
     pc += 2;
 }
@@ -564,55 +492,4 @@ void Chip8::LD_Vx_I(unsigned short x)
         v[i] = memory[i + I];
     }
     pc += 2;
-}
-
-bool Chip8::loadApplication(const char * filename)
-{
-	//init();
-	printf("Loading: %s\n", filename);
-		
-	// Open file
-	FILE * pFile = fopen(filename, "rb");
-	if (pFile == NULL)
-	{
-		fputs ("File error", stderr); 
-		return false;
-	}
-
-	// Check file size
-	fseek(pFile , 0 , SEEK_END);
-	long lSize = ftell(pFile);
-	rewind(pFile);
-	printf("Filesize: %d\n", (int)lSize);
-	
-	// Allocate memory to contain the whole file
-	char * buffer = (char*)malloc(sizeof(char) * lSize);
-	if (buffer == NULL) 
-	{
-		fputs ("Memory error", stderr); 
-		return false;
-	}
-
-	// Copy the file into the buffer
-	size_t result = fread (buffer, 1, lSize, pFile);
-	if (result != lSize) 
-	{
-		fputs("Reading error",stderr); 
-		return false;
-	}
-
-	// Copy buffer to Chip8 memory
-	if((4096-512) > lSize)
-	{
-		for(int i = 0; i < lSize; ++i)
-			memory[i + 512] = buffer[i];
-	}
-	else
-		printf("Error: ROM too big for memory");
-	
-	// Close file, free buffer
-	fclose(pFile);
-	free(buffer);
-
-	return true;
 }
