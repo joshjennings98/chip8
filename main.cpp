@@ -160,8 +160,6 @@ int main(int argc, char **argv) {
     // Temporary pixel buffer
     uint32_t pixels[2048];
 
-
-    load:
     // Attempt to load ROM
     if (!chip8.loadROM(argv[1]))
         return 2;
@@ -169,12 +167,6 @@ int main(int argc, char **argv) {
     // Emulation loop
     while (true) {
         chip8.executeCycle();
-
-        /*
-        for (auto x : chip8.keypad)
-            std::cout << (int) x;
-        std::cout << std::endl;
-        */
 
         // Process SDL events
         SDL_Event e;
@@ -185,10 +177,6 @@ int main(int argc, char **argv) {
             if (e.type == SDL_KEYDOWN) {
                 if (e.key.keysym.sym == SDLK_ESCAPE)
                     exit(0);
-
-                if (e.key.keysym.sym == SDLK_F1)
-                    goto load;      // *gasp*, a goto statement!
-                                    // Used to reset/reload ROM
 
                 for (int i = 0; i < 16; ++i) {
                     if (e.key.keysym.sym == keymap[i]) {
@@ -213,7 +201,7 @@ int main(int argc, char **argv) {
 
             // Store pixels in temporary buffer
             for (int i = 0; i < 2048; ++i) {
-                uint8_t pixel = chip8.display[i];
+                unsigned char pixel = chip8.display[i];
                 pixels[i] = (0x00FFFFFF * pixel) | 0xFF000000;
             }
             // Update SDL texture
