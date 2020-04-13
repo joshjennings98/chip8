@@ -51,7 +51,7 @@ bool Chip8::getDrawFlag()
     return drawFlag;
 }
 
-void Chip8::loadROM(std::string filename)
+bool Chip8::loadROM(std::string filename)
 {
     std::ifstream input(filename.c_str(), std::ios::in | std::ios::binary);    char c;
     unsigned char x;
@@ -62,6 +62,7 @@ void Chip8::loadROM(std::string filename)
         //std::cout << (int) x << std::endl;
         i++;
     }
+    return true;
 }
 
 void Chip8::setKeys()
@@ -249,20 +250,20 @@ void Chip8::CLS()
         display[i] = 0x0;
     }
     drawFlag = true;
-    pc += 2;// std::cout << __func__ << std::endl;
+    pc += 2;
 }
 
 void Chip8::RET()
 {
     sp--;
     pc = stack[sp];
-    pc += 2;// std::cout << __func__ << std::endl;
+    pc += 2;
 }
 
 void Chip8::SYS_addr(unsigned short addr)
 {
     //  This instruction is only used on the old computers on which Chip-8 was originally implemented. It is ignored by modern interpreters.
-    pc += 2;// std::cout << __func__ << std::endl;
+    pc += 2;
 }
 
 void Chip8::JP_addr(unsigned short addr)
@@ -282,7 +283,7 @@ void Chip8::SE_Vx_byte(unsigned short x, unsigned char byte)
     if (v[x] == byte) {
         pc += 4;
     } else {
-        pc += 2;// std::cout << __func__ << std::endl;
+        pc += 2;
     }
 }
 
@@ -291,7 +292,7 @@ void Chip8::SNE_Vx_byte(unsigned short x, unsigned char byte)
     if (v[x] != byte) {
         pc += 4;
     } else {
-        pc += 2;// std::cout << __func__ << std::endl;
+        pc += 2;
     }
 }
 
@@ -300,50 +301,50 @@ void Chip8::SE_Vx_Vy(unsigned short x, unsigned short y)
     if (v[x] == v[y]) {
         pc += 4;
     } else {
-        pc += 2;// std::cout << __func__ << std::endl;
+        pc += 2;
     }
 }
 
 void Chip8::LD_Vx_byte(unsigned short x, unsigned char byte)
 {
     v[x] = byte;
-    pc += 2;// std::cout << __func__ << std::endl;
+    pc += 2;
 }
 
 void Chip8::ADD_Vx_byte(unsigned short x, unsigned char byte)
 {
     v[x] += byte;
-    pc += 2;// std::cout << __func__ << std::endl;
+    pc += 2;
 }
 
 void Chip8::LD_Vx_Vy(unsigned short x, unsigned short y)
 {
     v[x] = v[y];
-    pc += 2;// std::cout << __func__ << std::endl;
+    pc += 2;
 }
 
 void Chip8::OR_Vx_Vy(unsigned short x, unsigned short y)
 {
     v[x] |= v[y];
-    pc += 2;// std::cout << __func__ << std::endl;
+    pc += 2;
 }
 
 void Chip8::AND_Vx_Vy(unsigned short x, unsigned short y)
 {
     v[x] &= v[y];
-    pc += 2;// std::cout << __func__ << std::endl;
+    pc += 2;
 }
 
 void Chip8::XOR_Vx_Vy(unsigned short x, unsigned short y)
 {
     v[x] ^= v[y];
-    pc += 2;// std::cout << __func__ << std::endl;
+    pc += 2;
 }
 
 void Chip8::ADD_Vx_Vy(unsigned short x, unsigned short y)
 {
     v[x] += v[y];
-    pc += 2;// std::cout << __func__ << std::endl;
+    pc += 2;
 
     if ((int) v[x] + (int) v[y] > 255) {
         v[0xF] = 1;
@@ -361,7 +362,7 @@ void Chip8::SUB_Vx_Vy(unsigned short x, unsigned short y)
     }
 
     v[x] -= v[y];
-    pc += 2;// std::cout << __func__ << std::endl;
+    pc += 2;
 }
 
 void Chip8::SHR_Vx_Vy(unsigned short x, unsigned short y)
@@ -373,7 +374,7 @@ void Chip8::SHR_Vx_Vy(unsigned short x, unsigned short y)
     }
 
     v[x] >>= 1;
-    pc += 2;// std::cout << __func__ << std::endl;
+    pc += 2;
 }
 
 void Chip8::SUBN_Vx_Vy(unsigned short x, unsigned short y)
@@ -385,7 +386,7 @@ void Chip8::SUBN_Vx_Vy(unsigned short x, unsigned short y)
     }
 
     v[x] = v[y] - v[x];
-    pc += 2;// std::cout << __func__ << std::endl;
+    pc += 2;
 }
 
 void Chip8::SHL_Vx_Vy(unsigned short x, unsigned short y)
@@ -397,7 +398,7 @@ void Chip8::SHL_Vx_Vy(unsigned short x, unsigned short y)
     }
 
     v[x] <<= 1;
-    pc += 2;// std::cout << __func__ << std::endl;
+    pc += 2;
 }
 
 void Chip8::SNE_Vx_Vy(unsigned short x, unsigned short y)
@@ -405,14 +406,14 @@ void Chip8::SNE_Vx_Vy(unsigned short x, unsigned short y)
     if (v[x] != v[y]) {
         pc += 4;
     } else {
-        pc += 2;// std::cout << __func__ << std::endl;
+        pc += 2;
     }
 }
 
 void Chip8::LD_I_addr(unsigned short addr)
 {
     I = addr;
-    pc += 2;// std::cout << __func__ << std::endl;
+    pc += 2;
 }
 
 void Chip8::JP_V0_addr(unsigned short addr)
@@ -424,33 +425,24 @@ void Chip8::RND_Vx_byte(unsigned short x, unsigned char byte)
 {
     char r = rand() % 255;
     v[x] = r & byte;
-    pc += 2;// std::cout << __func__ << std::endl;
+    pc += 2;
 }
 
 void Chip8::DRW_Vx_Vy_nibble(unsigned short x, unsigned short y, unsigned short n)
 {
-    unsigned char curr, prev;
     v[0xF] = 0;
 
-    for (unsigned short i = 0; i < n; i++) {
-        for (int j = 7; j >= 0; j--) {
-            if (memory[i + I] & (1 << j)) {
-                curr = 0xFF;
-            } else {
-                curr = 0x00;
-            }
-            //std::cout << curr << std::endl;
-            prev = display[v[x] + i + 64 * (v[y] + j)];
-            display[v[x] + i + 64 * (v[y] + j)] ^= curr;
-
-            if (curr & prev) {
-                v[0xF] = 1;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < 8; j++) {
+            if ((memory[I + i] & (0x80 >> j)) != 0) {
+                v[0xF] = display[(v[x] + j + ((v[y] + i) * 64))] == 1 ? 1 : 0;                                    
+                display[v[x] + j + ((v[y] + i) * 64)] ^= 1;
             }
         }
     }
                 
     drawFlag = true;			
-    pc += 2;// std::cout << __func__ << std::endl;
+    pc += 2;
 }
 
 void Chip8::SKP_Vx(unsigned short x)
@@ -458,7 +450,7 @@ void Chip8::SKP_Vx(unsigned short x)
     if (keypad[x] != 0) {
         pc += 4;
     } else {
-        pc += 2;// std::cout << __func__ << std::endl;
+        pc += 2;
     }
 } 
 
@@ -467,14 +459,14 @@ void Chip8::SKNP_Vx(unsigned short x)
     if (keypad[x] == 0) {
         pc += 4;
     } else {
-        pc += 2;// std::cout << __func__ << std::endl;
+        pc += 2;
     }
 }
 
 void Chip8::LD_Vx_DT(unsigned short x)
 {
     v[x] = delayTimer;
-    pc += 2;// std::cout << __func__ << std::endl;
+    pc += 2;
 }
 
 void Chip8::LD_Vx_K(unsigned short x)
@@ -487,26 +479,28 @@ void Chip8::LD_Vx_K(unsigned short x)
         {
             v[x] = i;
             keyPress = true;
+            
         }
+
     }
 
     // If we didn't received a keypress, skip this cycle and try again.
     if(!keyPress)						
         return;
 
-    pc += 2;// std::cout << __func__ << std::endl;
+    pc += 2;
 }
 
 void Chip8::LD_DT_Vx(unsigned short x)
 {
     delayTimer = v[x];
-    pc += 2;// std::cout << __func__ << std::endl;
+    pc += 2;
 }
 
 void Chip8::LD_ST_Vx(unsigned short x)
 {
     soundTimer = v[x];
-    pc += 2;// std::cout << __func__ << std::endl;
+    pc += 2;
 }
 
 void Chip8::ADD_I_Vx(unsigned short x)
@@ -516,13 +510,13 @@ void Chip8::ADD_I_Vx(unsigned short x)
     else
         v[0xF] = 0;
     I += v[x];
-    pc += 2;// std::cout << __func__ << std::endl;
+    pc += 2;
 }
 
 void Chip8::LD_F_Vx(unsigned short x)
 {
     I += 5 * v[x];
-    pc += 2;// std::cout << __func__ << std::endl;
+    pc += 2;
 }
 
 void Chip8::LD_B_Vx(unsigned short x)
@@ -530,7 +524,7 @@ void Chip8::LD_B_Vx(unsigned short x)
     memory[I] = v[x] / 100;
     memory[I + 1] = (v[x] / 10) % 10;
     memory[I + 2] = (v[x] % 100) % 10;					
-    pc += 2;// std::cout << __func__ << std::endl;
+    pc += 2;
 }
 
 void Chip8::LD_I_Vx(unsigned short x)
@@ -538,7 +532,7 @@ void Chip8::LD_I_Vx(unsigned short x)
     for (int i = 0; i <= x; i++) {
         memory[i + I] = v[i];
     }
-    pc += 2;// std::cout << __func__ << std::endl;
+    pc += 2;
 }
 
 void Chip8::LD_Vx_I(unsigned short x)
@@ -546,7 +540,7 @@ void Chip8::LD_Vx_I(unsigned short x)
     for (int i = 0; i <= x; i++) {
         v[i] = memory[i + I];
     }
-    pc += 2;// std::cout << __func__ << std::endl;
+    pc += 2;
 }
 
 bool Chip8::loadApplication(const char * filename)
