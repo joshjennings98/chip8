@@ -17,22 +17,29 @@ int main()
     Chip8 chip8;
  
     chip8.loadROM("pong.rom");
+    //chip8.loadApplication("pong.rom");
 
     //return 0;
+    int i = 0;
 
     while(true)
     {
+        i++;
         chip8.executeCycle();
 
         // Only draw to screen if draw flag is set
         if(chip8.getDrawFlag()) {
             drawGraphics(&chip8);
             std::cin.get();
-            chip8.resetDrawFlag();
+            //chip8.resetDrawFlag();
         }
         
         chip8.setKeys();
         //std::cin.get();
+
+        while (i % 100000 != 0) {
+            i++;
+        }
   	
     }
 
@@ -58,14 +65,16 @@ void drawGraphics(Chip8 * chip8)
     
     for (int i = 0; i < 32; i++) {
         for (int j = 0; j < 64; j++) {
-            if (chip8->display[i][j] != 0) {
+            if (chip8->display[i * j + j] != 0) {
                 std::cout << "██";
             } else {
                 std::cout << "  ";
             }
-            //std::cout << (int) chip8->display[i][j] << " ";
         }
-        std::cout << std::endl;
+        std::cout << std::endl; 
+        //for (auto i : chip8->display) {
+        //    std::cout << (int) i << " ";
+        //}
     }
 
     chip8->resetDrawFlag();

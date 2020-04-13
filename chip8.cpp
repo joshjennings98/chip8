@@ -2,6 +2,7 @@
 #include<iostream>
 #include<random>
 #include<fstream>
+#include<assert.h>
 #include"chip8.h"
 
 int k = 0;
@@ -14,10 +15,8 @@ Chip8::Chip8()
     sp = 0;
  
     // Clear display	
-    for (int i = 0; i < 32; i++) { 
-        for (int j = 0; j < 64; j++) {
-            display[i][j] = 0;
-        }
+    for (int i = 0; i < 2048; i++) { 
+        display[i] = 0x0;
     }
 
     // Clear stack
@@ -78,13 +77,18 @@ void Chip8::resetDrawFlag()
 void Chip8::executeCycle()
 {
     opcode = memory[pc] << 8 | memory[pc + 1];
-    //std::cout << k << std::endl;
-    k++;
 
+    
+    //assert(pc < 0x210);
+
+    
     addr = opcode & 0x0FFF;
     byte = opcode & 0x00FF;
-    x = opcode & 0x0F00 >> 8;
-    y = opcode & 0x00F0 >> 4;
+    x = (opcode & 0x0F00) >> 8;
+    y = (opcode & 0x00F0) >> 4;
+   
+    //printf("%X %X \naddr=%d byte=%d x=%d y=%d ", pc, opcode, addr, byte, x, y);
+
 
     switch(opcode & 0xF000) {    
         case 0x0000:
@@ -228,35 +232,45 @@ void Chip8::executeCycle()
         }
         soundTimer--;
     }  
+
+     /*
+    for (int i = 0; i < 16; i++)
+        std::cout << "v" << i  << "=" << (int) v[i] << " ";
+    printf("I=%d", I);
+    std::cout << std::endl << std::endl;
+
+    std::cin.get();
+    // */
 }
 
 void Chip8::CLS()
 {
-    for (int i = 0; i < 32; i++) { 
-        for (int j = 0; j < 64; j++) {
-            display[i][j] = 0;
-        }
+    for (int i = 0; i < 2048; i++) { 
+        display[i] = 0x0;
     }
+    drawFlag = true;
+    pc += 2;// std::cout << __func__ << std::endl;
 }
 
 void Chip8::RET()
 {
-    pc = stack[sp];
     sp--;
+    pc = stack[sp];
+    pc += 2;// std::cout << __func__ << std::endl;
 }
 
-void Chip8::SYS_addr(unsigned char addr)
+void Chip8::SYS_addr(unsigned short addr)
 {
     //  This instruction is only used on the old computers on which Chip-8 was originally implemented. It is ignored by modern interpreters.
-    pc += 2;
+    pc += 2;// std::cout << __func__ << std::endl;
 }
 
-void Chip8::JP_addr(unsigned char addr)
+void Chip8::JP_addr(unsigned short addr)
 {
     pc = addr;
 }
 
-void Chip8::CALL_addr(unsigned char addr)
+void Chip8::CALL_addr(unsigned short addr)
 {
     stack[sp] = pc;
     sp++;
@@ -268,7 +282,7 @@ void Chip8::SE_Vx_byte(unsigned short x, unsigned char byte)
     if (v[x] == byte) {
         pc += 4;
     } else {
-        pc += 2;
+        pc += 2;// std::cout << __func__ << std::endl;
     }
 }
 
@@ -277,7 +291,7 @@ void Chip8::SNE_Vx_byte(unsigned short x, unsigned char byte)
     if (v[x] != byte) {
         pc += 4;
     } else {
-        pc += 2;
+        pc += 2;// std::cout << __func__ << std::endl;
     }
 }
 
@@ -286,50 +300,50 @@ void Chip8::SE_Vx_Vy(unsigned short x, unsigned short y)
     if (v[x] == v[y]) {
         pc += 4;
     } else {
-        pc += 2;
+        pc += 2;// std::cout << __func__ << std::endl;
     }
 }
 
 void Chip8::LD_Vx_byte(unsigned short x, unsigned char byte)
 {
     v[x] = byte;
-    pc += 2;
+    pc += 2;// std::cout << __func__ << std::endl;
 }
 
 void Chip8::ADD_Vx_byte(unsigned short x, unsigned char byte)
 {
     v[x] += byte;
-    pc += 2;
+    pc += 2;// std::cout << __func__ << std::endl;
 }
 
 void Chip8::LD_Vx_Vy(unsigned short x, unsigned short y)
 {
     v[x] = v[y];
-    pc += 2;
+    pc += 2;// std::cout << __func__ << std::endl;
 }
 
 void Chip8::OR_Vx_Vy(unsigned short x, unsigned short y)
 {
     v[x] |= v[y];
-    pc += 2;
+    pc += 2;// std::cout << __func__ << std::endl;
 }
 
 void Chip8::AND_Vx_Vy(unsigned short x, unsigned short y)
 {
     v[x] &= v[y];
-    pc += 2;
+    pc += 2;// std::cout << __func__ << std::endl;
 }
 
 void Chip8::XOR_Vx_Vy(unsigned short x, unsigned short y)
 {
     v[x] ^= v[y];
-    pc += 2;
+    pc += 2;// std::cout << __func__ << std::endl;
 }
 
 void Chip8::ADD_Vx_Vy(unsigned short x, unsigned short y)
 {
     v[x] += v[y];
-    pc += 2;
+    pc += 2;// std::cout << __func__ << std::endl;
 
     if ((int) v[x] + (int) v[y] > 255) {
         v[0xF] = 1;
@@ -340,14 +354,14 @@ void Chip8::ADD_Vx_Vy(unsigned short x, unsigned short y)
 
 void Chip8::SUB_Vx_Vy(unsigned short x, unsigned short y)
 {
-    if (v[x] > v[y]) {
+    if (v[x] >= v[y]) {
         v[0xF] = 1;
     } else {
         v[0xF] = 0;
     }
 
     v[x] -= v[y];
-    pc += 2;
+    pc += 2;// std::cout << __func__ << std::endl;
 }
 
 void Chip8::SHR_Vx_Vy(unsigned short x, unsigned short y)
@@ -359,19 +373,19 @@ void Chip8::SHR_Vx_Vy(unsigned short x, unsigned short y)
     }
 
     v[x] >>= 1;
-    pc += 2;
+    pc += 2;// std::cout << __func__ << std::endl;
 }
 
 void Chip8::SUBN_Vx_Vy(unsigned short x, unsigned short y)
 {
-    if (v[y] > v[x]) {
+    if (v[y] >= v[x]) {
         v[0xF] = 1;
     } else {
         v[0xF] = 0;
     }
 
     v[x] = v[y] - v[x];
-    pc += 2;
+    pc += 2;// std::cout << __func__ << std::endl;
 }
 
 void Chip8::SHL_Vx_Vy(unsigned short x, unsigned short y)
@@ -382,8 +396,8 @@ void Chip8::SHL_Vx_Vy(unsigned short x, unsigned short y)
         v[0xF] = 0;
     }
 
-    v[x] = v[x] << 1 & 0xFF;
-    pc += 2;
+    v[x] <<= 1;
+    pc += 2;// std::cout << __func__ << std::endl;
 }
 
 void Chip8::SNE_Vx_Vy(unsigned short x, unsigned short y)
@@ -391,17 +405,17 @@ void Chip8::SNE_Vx_Vy(unsigned short x, unsigned short y)
     if (v[x] != v[y]) {
         pc += 4;
     } else {
-        pc += 2;
+        pc += 2;// std::cout << __func__ << std::endl;
     }
 }
 
-void Chip8::LD_I_addr(unsigned char addr)
+void Chip8::LD_I_addr(unsigned short addr)
 {
-    I = memory[addr];
-    pc += 2;
+    I = addr;
+    pc += 2;// std::cout << __func__ << std::endl;
 }
 
-void Chip8::JP_V0_addr(unsigned char addr)
+void Chip8::JP_V0_addr(unsigned short addr)
 {
     pc = v[0] + addr;
 }
@@ -410,28 +424,14 @@ void Chip8::RND_Vx_byte(unsigned short x, unsigned char byte)
 {
     char r = rand() % 255;
     v[x] = r & byte;
-    pc += 2;
+    pc += 2;// std::cout << __func__ << std::endl;
 }
 
 void Chip8::DRW_Vx_Vy_nibble(unsigned short x, unsigned short y, unsigned short n)
 {
+    unsigned char curr, prev;
     v[0xF] = 0;
 
-    unsigned char curr, prev;
-    /*
-    
-    for (int i = 0; i < n; ++i) {
-        curr = memory[I + i];
-        for (int j = 0; j < 8; ++j) {
-            if ((curr & (0x80 >> j)) != 0) {
-                display[v[x] + j][v[y] + i] ^= curr;
-                
-                v[0xF] = 1;
-            }
-        }
-    }
-    */
-    // /*
     for (unsigned short i = 0; i < n; i++) {
         for (int j = 7; j >= 0; j--) {
             if (memory[i + I] & (1 << j)) {
@@ -440,17 +440,17 @@ void Chip8::DRW_Vx_Vy_nibble(unsigned short x, unsigned short y, unsigned short 
                 curr = 0x00;
             }
             //std::cout << curr << std::endl;
-            prev = display[v[x] + i][v[y] + j];
-            display[v[x] + i][v[y] + j] ^= curr;
+            prev = display[v[x] + i + 64 * (v[y] + j)];
+            display[v[x] + i + 64 * (v[y] + j)] ^= curr;
 
             if (curr & prev) {
                 v[0xF] = 1;
             }
         }
     }
-    // */
-    pc += 2;
-    drawFlag = true;
+                
+    drawFlag = true;			
+    pc += 2;// std::cout << __func__ << std::endl;
 }
 
 void Chip8::SKP_Vx(unsigned short x)
@@ -458,7 +458,7 @@ void Chip8::SKP_Vx(unsigned short x)
     if (keypad[x] != 0) {
         pc += 4;
     } else {
-        pc += 2;
+        pc += 2;// std::cout << __func__ << std::endl;
     }
 } 
 
@@ -467,52 +467,70 @@ void Chip8::SKNP_Vx(unsigned short x)
     if (keypad[x] == 0) {
         pc += 4;
     } else {
-        pc += 2;
+        pc += 2;// std::cout << __func__ << std::endl;
     }
 }
 
 void Chip8::LD_Vx_DT(unsigned short x)
 {
     v[x] = delayTimer;
-    pc += 2;
+    pc += 2;// std::cout << __func__ << std::endl;
 }
 
 void Chip8::LD_Vx_K(unsigned short x)
 {
-    v[x] = soundTimer;
-    pc += 2;
+    bool keyPress = false;
+
+    for(int i = 0; i < 16; ++i)
+    {
+        if(keypad[i] != 0)
+        {
+            v[x] = i;
+            keyPress = true;
+        }
+    }
+
+    // If we didn't received a keypress, skip this cycle and try again.
+    if(!keyPress)						
+        return;
+
+    pc += 2;// std::cout << __func__ << std::endl;
 }
 
 void Chip8::LD_DT_Vx(unsigned short x)
 {
     delayTimer = v[x];
-    pc += 2;
+    pc += 2;// std::cout << __func__ << std::endl;
 }
 
 void Chip8::LD_ST_Vx(unsigned short x)
 {
     soundTimer = v[x];
-    pc += 2;
+    pc += 2;// std::cout << __func__ << std::endl;
 }
 
 void Chip8::ADD_I_Vx(unsigned short x)
 {
+    if(I + v[x] > 0xFFF)	// VF is set to 1 when range overflow (I+VX>0xFFF), and 0 when there isn't.
+        v[0xF] = 1;
+    else
+        v[0xF] = 0;
     I += v[x];
-    pc += 2;
+    pc += 2;// std::cout << __func__ << std::endl;
 }
 
 void Chip8::LD_F_Vx(unsigned short x)
 {
     I += 5 * v[x];
-    pc += 2;
+    pc += 2;// std::cout << __func__ << std::endl;
 }
 
 void Chip8::LD_B_Vx(unsigned short x)
 {
-    memory[I]     = v[x] / 100;
-    memory[I + 1] = (v[x] % 100 / 10);
-    memory[I + 2] = (v[x] % 10);
-    pc += 2;
+    memory[I] = v[x] / 100;
+    memory[I + 1] = (v[x] / 10) % 10;
+    memory[I + 2] = (v[x] % 100) % 10;					
+    pc += 2;// std::cout << __func__ << std::endl;
 }
 
 void Chip8::LD_I_Vx(unsigned short x)
@@ -520,14 +538,64 @@ void Chip8::LD_I_Vx(unsigned short x)
     for (int i = 0; i <= x; i++) {
         memory[i + I] = v[i];
     }
-    pc += 2;
+    pc += 2;// std::cout << __func__ << std::endl;
 }
 
 void Chip8::LD_Vx_I(unsigned short x)
 {
-    printf("test");
     for (int i = 0; i <= x; i++) {
         v[i] = memory[i + I];
     }
-    pc += 2;
+    pc += 2;// std::cout << __func__ << std::endl;
+}
+
+bool Chip8::loadApplication(const char * filename)
+{
+	//init();
+	printf("Loading: %s\n", filename);
+		
+	// Open file
+	FILE * pFile = fopen(filename, "rb");
+	if (pFile == NULL)
+	{
+		fputs ("File error", stderr); 
+		return false;
+	}
+
+	// Check file size
+	fseek(pFile , 0 , SEEK_END);
+	long lSize = ftell(pFile);
+	rewind(pFile);
+	printf("Filesize: %d\n", (int)lSize);
+	
+	// Allocate memory to contain the whole file
+	char * buffer = (char*)malloc(sizeof(char) * lSize);
+	if (buffer == NULL) 
+	{
+		fputs ("Memory error", stderr); 
+		return false;
+	}
+
+	// Copy the file into the buffer
+	size_t result = fread (buffer, 1, lSize, pFile);
+	if (result != lSize) 
+	{
+		fputs("Reading error",stderr); 
+		return false;
+	}
+
+	// Copy buffer to Chip8 memory
+	if((4096-512) > lSize)
+	{
+		for(int i = 0; i < lSize; ++i)
+			memory[i + 512] = buffer[i];
+	}
+	else
+		printf("Error: ROM too big for memory");
+	
+	// Close file, free buffer
+	fclose(pFile);
+	free(buffer);
+
+	return true;
 }

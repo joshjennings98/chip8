@@ -47,13 +47,11 @@ class Chip8 {
         unsigned short stack[16];
         unsigned short sp;
 
-        unsigned char keypad[16];
-
         void CLS();
         void RET();
-        void SYS_addr(unsigned char addr);
-        void JP_addr(unsigned char addr);
-        void CALL_addr(unsigned char addr);
+        void SYS_addr(unsigned short addr);
+        void JP_addr(unsigned short addr);
+        void CALL_addr(unsigned short addr);
         void SE_Vx_byte(unsigned short x, unsigned char byte);
         void SNE_Vx_byte(unsigned short x, unsigned char byte);
         void SE_Vx_Vy(unsigned short x, unsigned short y);
@@ -69,8 +67,8 @@ class Chip8 {
         void SUBN_Vx_Vy(unsigned short x, unsigned short y);
         void SHL_Vx_Vy(unsigned short x, unsigned short y);
         void SNE_Vx_Vy(unsigned short x, unsigned short y);
-        void LD_I_addr(unsigned char addr);
-        void JP_V0_addr(unsigned char addr);
+        void LD_I_addr(unsigned short addr);
+        void JP_V0_addr(unsigned short addr);
         void RND_Vx_byte(unsigned short x, unsigned char byte);
         void DRW_Vx_Vy_nibble(unsigned short x, unsigned short y, unsigned short n);
         void SKP_Vx(unsigned short x);
@@ -86,7 +84,8 @@ class Chip8 {
         void LD_Vx_I(unsigned short x);
 
     public:
-        unsigned char display[32][64];
+        unsigned char display[2048];
+        unsigned char keypad[16];
 
         Chip8(); 
         void executeCycle();
@@ -94,6 +93,8 @@ class Chip8 {
         void setKeys();
         bool getDrawFlag();
         void resetDrawFlag();
+        bool loadApplication(const char * filename);
 };
+
 
 #endif
