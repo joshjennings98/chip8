@@ -29,6 +29,23 @@ Alternatively, run `./chip8 <ROM>` for a window with `width=1024`, and `height=5
 
 For some roms to try out, see [this GitHub repo](https://github.com/loktar00/chip8/tree/master/roms).
 
+**Controls**
+
+The keys on the keypad have been mapped to the keyboard in the following mapping:
+
+```
+Keypad                   Keyboard
++-+-+-+-+                +-+-+-+-+
+|1|2|3|C|                |1|2|3|4|
++-+-+-+-+                +-+-+-+-+
+|4|5|6|D|                |Q|W|E|R|
++-+-+-+-+       =>       +-+-+-+-+
+|7|8|9|E|                |A|S|D|F|
++-+-+-+-+                +-+-+-+-+
+|A|0|B|F|                |Z|X|C|V|
++-+-+-+-+                +-+-+-+-+
+```
+
 ## Acknowledgements
 
 These resources were helpful when I programmed this:
