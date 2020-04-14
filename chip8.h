@@ -8,65 +8,66 @@
 
 class Chip8 {
     private:
-        unsigned short opcode;
-        unsigned short addr;
-        unsigned char byte;
-        unsigned short x;
-        unsigned short y;
+        short opcode;
+        
+        uint16_t addr;
+        uint8_t byte;
+        short x;
+        short y;
 
         bool drawFlag;
 
-        unsigned char memory[4096];
-        unsigned char v[16];
+        uint8_t memory[4096];
+        uint8_t v[16];
 
-        unsigned short I;
-        unsigned short pc;
+        short I;
+        short pc;
 
-        unsigned char delayTimer;
-        unsigned char soundTimer;
+        uint8_t delayTimer;
+        uint8_t soundTimer;
 
-        unsigned short stack[16];
-        unsigned short sp;
+        short stack[16];
+        short sp;
 
         void CLS();
         void RET();
-        void SYS_addr(unsigned short addr);
-        void JP_addr(unsigned short addr);
-        void CALL_addr(unsigned short addr);
-        void SE_Vx_byte(unsigned short x, unsigned char byte);
-        void SNE_Vx_byte(unsigned short x, unsigned char byte);
-        void SE_Vx_Vy(unsigned short x, unsigned short y);
-        void LD_Vx_byte(unsigned short x, unsigned char byte);
-        void ADD_Vx_byte(unsigned short x, unsigned char byte);
-        void LD_Vx_Vy(unsigned short x, unsigned short y);
-        void OR_Vx_Vy(unsigned short x, unsigned short y);
-        void AND_Vx_Vy(unsigned short x, unsigned short y);
-        void XOR_Vx_Vy(unsigned short x, unsigned short y);
-        void ADD_Vx_Vy(unsigned short x, unsigned short y);
-        void SUB_Vx_Vy(unsigned short x, unsigned short y);
-        void SHR_Vx_Vy(unsigned short x, unsigned short y);
-        void SUBN_Vx_Vy(unsigned short x, unsigned short y);
-        void SHL_Vx_Vy(unsigned short x, unsigned short y);
-        void SNE_Vx_Vy(unsigned short x, unsigned short y);
-        void LD_I_addr(unsigned short addr);
-        void JP_V0_addr(unsigned short addr);
-        void RND_Vx_byte(unsigned short x, unsigned char byte);
-        void DRW_Vx_Vy_nibble(unsigned short x, unsigned short y, unsigned short n);
-        void SKP_Vx(unsigned short x);
-        void SKNP_Vx(unsigned short x);
-        void LD_Vx_DT(unsigned short x);
-        void LD_Vx_K(unsigned short x);
-        void LD_DT_Vx(unsigned short x);
-        void LD_ST_Vx(unsigned short x);
-        void ADD_I_Vx(unsigned short x);
-        void LD_F_Vx(unsigned short x);
-        void LD_B_Vx(unsigned short x);
-        void LD_I_Vx(unsigned short x);
-        void LD_Vx_I(unsigned short x);
+        void SYS_addr(uint16_t addr);
+        void JP_addr(uint16_t addr);
+        void CALL_addr(uint16_t addr);
+        void SE_Vx_byte(short x, uint8_t byte);
+        void SNE_Vx_byte(short x, uint8_t byte);
+        void SE_Vx_Vy(short x, short y);
+        void LD_Vx_byte(short x, uint8_t byte);
+        void ADD_Vx_byte(short x, uint8_t byte);
+        void LD_Vx_Vy(short x, short y);
+        void OR_Vx_Vy(short x, short y);
+        void AND_Vx_Vy(short x, short y);
+        void XOR_Vx_Vy(short x, short y);
+        void ADD_Vx_Vy(short x, short y);
+        void SUB_Vx_Vy(short x, short y);
+        void SHR_Vx_Vy(short x, short y);
+        void SUBN_Vx_Vy(short x, short y);
+        void SHL_Vx_Vy(short x, short y);
+        void SNE_Vx_Vy(short x, short y);
+        void LD_I_addr(uint16_t addr);
+        void JP_V0_addr(uint16_t addr);
+        void RND_Vx_byte(short x, uint8_t byte);
+        void DRW_Vx_Vy_nibble(short x, short y, short n);
+        void SKP_Vx(short x);
+        void SKNP_Vx(short x);
+        void LD_Vx_DT(short x);
+        void LD_Vx_K(short x);
+        void LD_DT_Vx(short x);
+        void LD_ST_Vx(short x);
+        void ADD_I_Vx(short x);
+        void LD_F_Vx(short x);
+        void LD_B_Vx(short x);
+        void LD_I_Vx(short x);
+        void LD_Vx_I(short x);
 
     public:
-        unsigned char display[2048];
-        unsigned char keypad[16];
+        uint8_t display[2048];
+        uint8_t keypad[16];
 
         Chip8(); 
         void executeCycle();
