@@ -76,11 +76,12 @@ bool Chip8::getDrawFlag()
 }
 
 bool Chip8::loadROM(std::string filename)
-{
-    std::ifstream input(filename.c_str(), std::ios::in | std::ios::binary);    
+{    
     char c;
     uint8_t x;
     int i = 0;
+
+    std::ifstream input(filename.c_str(), std::ios::in | std::ios::binary);    
 
     while (input.get(c)) {
         x = c;

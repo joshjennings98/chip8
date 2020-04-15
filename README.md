@@ -27,7 +27,9 @@ Alternatively, run `./chip8 <ROM>` for a window with `width=1024`, and `height=5
 
 **ROMS**
 
-For some roms to try out, see [this GitHub repo](https://github.com/loktar00/chip8/tree/master/roms).
+This repo includes a two player game of pong at `pong.ch8`. 
+
+For some more roms to try out, see [this GitHub repo](https://github.com/loktar00/chip8/tree/master/roms).
 
 **Controls**
 
