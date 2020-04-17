@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
                     return 0;
                 }
 
-                for (int i = 0; i < 16; ++i) {
+                for (int i = 0; i < 16; i++) {
                     if (e.key.keysym.sym == keys[i]) {
                         chip8.keypad[i] = 1;
                     }
@@ -79,7 +79,7 @@ int main(int argc, char **argv) {
 
             // Handle key release events
             if (e.type == SDL_KEYUP) {
-                for (int i = 0; i < 16; ++i) {
+                for (int i = 0; i < 16; i++) {
                     if (e.key.keysym.sym == keys[i]) {
                         chip8.keypad[i] = 0;
                     }
@@ -89,7 +89,7 @@ int main(int argc, char **argv) {
 
         // Only redraw if draw flag is enabled
         if (chip8.getDrawFlag()) {
-            for (int i = 0; i < 2048; ++i) {
+            for (int i = 0; i < 2048; i++) {
                 screenBuffer[i] = (0x00FFFFFF * chip8.display[i]) | 0xFF000000;
             }
             
